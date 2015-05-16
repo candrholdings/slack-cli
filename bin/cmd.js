@@ -166,6 +166,10 @@ var cmd = function () {
         'sendFileMessage': [ 'uploadFile', function (callback, pipe) {
             logger.debug('sendFileMessage');
 
+            if (!pipe.uploadFile) {
+                return callback();
+            }
+
             post(api('chat.postMessage'), { 
                 form: {
                     channel: pipe.groupId,
