@@ -173,7 +173,7 @@ var cmd = function () {
             post(api('chat.postMessage'), { 
                 form: {
                     channel: pipe.groupId,
-                    text: '<' + pipe.uploadFile.file.permalink_public + '|' + (options.message || options.file) + '>'
+                    text: '<' + pipe.uploadFile.file.permalink + '|' + (options.message || options.file) + '> (<' + pipe.uploadFile.file.permalink_public + '|Public Permalink>)'
                 }
             }, function (err, response, body) {
                 if (err) {
