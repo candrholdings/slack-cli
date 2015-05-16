@@ -30,6 +30,7 @@ With npm do:
       -f, --file <ARG1>     Specify the name of the file to send
       -t, --token <ARG1>    Specify the Slack API token
       -v, --verbose         Set to verbose mode
+      -c, --console         Use console to input message
 
 # Advanced mode
 
