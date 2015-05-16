@@ -12,7 +12,7 @@ var cmd = function () {
 
     var ERROR_MESSAGES = {
         'SLACK_TOKEN not found': 'Please either set environment variable SLACK_TOKEN or specify token using --token.',
-        'nothing to do': 'Please specify either message or file name.'
+        'nothing to do': 'Please specify either message, file name or running in console mode.'
     };
 
     var options = stdio.getopt({
@@ -40,6 +40,10 @@ var cmd = function () {
         'verbose': {
             key: 'v',
             description: 'Set to verbose mode'
+        },
+        'console': {
+            key: 'c',
+            description: 'Use console to input message'
         }
     });
 
@@ -81,7 +85,7 @@ var cmd = function () {
                 return callback('group not found');
             }
 
-            if (!options.message && !options.file) {
+            if (!options.message && !options.file && !options.console) {
                 return callback('nothing to do');
             }
 
@@ -182,6 +186,36 @@ var cmd = function () {
 
                 logger.debug(JSON.parse(body));
                 callback(null, JSON.parse(body));
+            });
+        }],
+        'sendConsoleMessage': [ 'groupId', function (callback, pipe) {
+            logger.debug('sendConsoleMessage');
+
+            if (!options.console) {
+                return callback();
+            }
+
+            var message = '';
+
+            process.stdin.setEncoding('utf8');
+
+            process.stdin.on('readable', function() {
+                var chunk = process.stdin.read();
+                if (chunk !== null) {
+                    message += chunk;
+                }
+            });
+
+            process.stdin.on('end', function() {
+                post(api('chat.postMessage'), { 
+                    form: {
+                        channel: pipe.groupId,
+                        text: message
+                    }
+                }, function (err, response, body) {
+                    logger.debug(JSON.parse(body));
+                    callback(err, err ? null : JSON.parse(body));
+                });
             });
         }]
     },

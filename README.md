@@ -9,6 +9,12 @@ A simple CLI for Slack.
 
     slackcli -t <SLACK TOKEN> -g <GROUP NAME> -f <FILE NAME> -m "Download this file"
 
+# Send from standard input
+
+    > slackcli -t <SLACK TOKEN> -g <GROUP NAME> -c
+    Hello World!
+    >
+
 # Install
 With npm do:
 
@@ -24,3 +30,10 @@ With npm do:
       -f, --file <ARG1>     Specify the name of the file to send
       -t, --token <ARG1>    Specify the Slack API token
       -v, --verbose         Set to verbose mode
+
+# Advanced mode
+
+To reuse the Slack token, you can set the token as the environment variable SLACK_TOKEN like this.
+
+    SET SLACK_TOKEN=<SLACK TOKEN>
+
