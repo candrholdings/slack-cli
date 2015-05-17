@@ -8,42 +8,55 @@ var cmd = function () {
         async = require('async'),
         winston = require('winston'),
         fs = require('fs'),
-        stdio = require('stdio');
+        stdio = require('stdio'),
+        WebSocket = require('ws');
 
     var ERROR_MESSAGES = {
         'SLACK_TOKEN not found': 'Please either set environment variable SLACK_TOKEN or specify token using --token.',
         'nothing to do': 'Please specify either message, file name or running in console mode.'
     };
 
+    var DEFAULT_TIMEOUT = 30000;
+
     var options = stdio.getopt({
         'message': {
             key: 'm', 
-            description: 'Specify the text of the message to send',
+            description: 'Specify the text of the message to send.',
             args: 1
         },
         'group': {
             key: 'g',
-            description: 'Specify the group name',
+            description: 'Specify the group name.',
             mandatory: true,
             args: 1
         },
         'file': {
             key: 'f',
-            description: 'Specify the name of the file to send',
+            description: 'Specify the name of the file to send.',
             args: 1
         },
         'token': {
             key: 't',
-            description: 'Specify the Slack API token',
+            description: 'Specify the Slack API token.',
             args: 1
         },
         'verbose': {
             key: 'v',
-            description: 'Set to verbose mode'
+            description: 'Set to verbose mode.'
         },
         'console': {
             key: 'c',
-            description: 'Use console to input message'
+            description: 'Use console to input message.'
+        },
+        'waitForText': {
+            key: 'w',
+            description: 'Specify the text message to wait.  Default timeout is 30 seconds.',
+            args: 1
+        },
+        'timeout': {
+            key: 's',
+            description: 'Specify the seconds to timeout when using --waitForText.',
+            args: 1
         }
     });
 
@@ -66,7 +79,7 @@ var cmd = function () {
     }
 
     function post(url, data, callback) {
-        logger.debug('request.post url ', url, 'data', data);
+        logger.debug('request.post url', url, 'data', data);
 
         return request.post(url, data, callback);
     }
@@ -85,7 +98,7 @@ var cmd = function () {
                 return callback('group not found');
             }
 
-            if (!options.message && !options.file && !options.console) {
+            if (!options.message && !options.file && !options.console && !options.waitForText) {
                 return callback('nothing to do');
             }
 
@@ -217,16 +230,60 @@ var cmd = function () {
                     callback(err, err ? null : JSON.parse(body));
                 });
             });
+        }],
+        'waitForText': [ 'groupId', function (callback, pipe) {
+            logger.debug('rtm');
+
+            if (!options.waitForText) {
+                return;
+            }
+
+            post(api('rtm.start'), {}, function (err, response, body) {
+                var result = JSON.parse(body);
+                var wss = result.url;
+
+                logger.debug('url', wss);
+
+                if (!wss) {
+                    return callback('wss not found');
+                }
+
+                var ws = new WebSocket(wss);
+
+                setTimeout(function () {
+                    ws.close();
+                    return callback('timeout');
+                }, options.timeout || DEFAULT_TIMEOUT);
+
+                ws.on('message', function (data, flags) {
+                    if (flags.binary) {
+                        return;
+                    }
+
+                    var result = JSON.parse(data);
+
+                    logger.debug(result);
+                    logger.debug(result.type === 'message', result.text, options.waitForText, result.text === options.waitForText);
+
+                    if (result.type === 'message' && result.text === options.waitForText) {
+                        ws.close();
+                        return callback(null, result);
+                    }
+                });
+            });
         }]
     },
     function (err, results) {
+        if (err) {
+            logger.error({
+                error: {
+                    err: err,
+                    message: ERROR_MESSAGES[err]
+                }
+            });
 
-        err && logger.error({
-            error: {
-                err: err,
-                message: ERROR_MESSAGES[err]
-            }
-        });
+            process.exit(1);
+        }
     });
 };
 

@@ -1,6 +1,6 @@
 {
   "name": "slack-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A simple CLI for Slack",
   "bin": {
     "slackcli": "bin/cmd.js"
@@ -10,7 +10,8 @@
     "async": "^0.9.0",
     "request": "^2.55.0",
     "winston": "^1.0.0",
-    "stdio": "~0.2.7"
+    "stdio": "~0.2.7",
+    "ws": "0.7.2"
   },
   "devDependencies": {
     "jasmine-node": "1.14.5",
