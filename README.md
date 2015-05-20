@@ -31,6 +31,8 @@ With npm do:
       -t, --token <ARG1>    Specify the Slack API token
       -v, --verbose         Set to verbose mode
       -c, --console         Use console to input message
+      -w, --waitText <ARG1>         Specify the text message to wait.  Default timeout is 30 seconds.
+      -s, --timeout <ARG1>          Specify the seconds to timeout when using --waitText.
 
 # Advanced mode
 
