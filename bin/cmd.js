@@ -209,6 +209,7 @@ var cmd = function () {
             }
 
             var message = '';
+            var messages = [];
 
             process.stdin.setEncoding('utf8');
 
@@ -217,6 +218,24 @@ var cmd = function () {
                 if (chunk !== null) {
                     message += chunk;
                 }
+
+                var m = message.split('\n');
+                messages = messages.concat(m.splice(0, m.length - 1));
+                message = m[m.length - 1];
+
+                messages.forEach(function (v, i) {
+	                post(api('chat.postMessage'), { 
+	                    form: {
+	                        channel: pipe.groupId,
+	                        text: v
+	                    }
+	                }, function (err, response, body) {
+	                	logger.debug(JSON.parse(body));
+	                    err && callback(err, err ? null : JSON.parse(body));
+	                });
+                });
+
+                messages = [];
             });
 
             process.stdin.on('end', function() {
@@ -226,9 +245,13 @@ var cmd = function () {
                         text: message
                     }
                 }, function (err, response, body) {
-                    logger.debug(JSON.parse(body));
+                	logger.debug(JSON.parse(body));
                     callback(err, err ? null : JSON.parse(body));
                 });
+            });
+
+            process.stdin.on('error', function (err) {
+            	callback(err);
             });
         }],
         'waitForText': [ 'groupId', function (callback, pipe) {
