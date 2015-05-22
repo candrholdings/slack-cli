@@ -46,7 +46,7 @@ Usage
 
 Advanced Mode
 -------------
-To reuse the [Slack token](https://api.slack.com/web), you can set the token as the environment variable SLACK_TOKEN like this.
+To reuse the [Slack token](https://api.slack.com/web), you can set the token as the environment variable `SLACK_TOKEN` like this.
 
     SET SLACK_TOKEN=xoxo-12345678-12345678-12345678-123abc
 
