@@ -1,28 +1,38 @@
-# slack-cli
-A simple CLI for Slack.
+slack-cli
+=========
+A very simple command line interface (CLI) for [Slack](https://slack.com).
 
-# Send a message
+Send a message
+--------------
 
-    slackcli -t <SLACK TOKEN> -g <GROUP NAME> -m "Hello World!"
+    slackcli -t slack_token -g group_name -m "Hello World!"
+    
+Or if the environment variable [`SLACK_TOKEN`](https://api.slack.com/web) is set, you can simply use,
 
-# Send a file
+    slackcli -g group_name -m "Hello World!"
 
-    slackcli -t <SLACK TOKEN> -g <GROUP NAME> -f <FILE NAME> -m "Download this file"
+Send a file
+-----------
 
-# Send from standard input
+    slackcli -t slack_token -g group_name -f filename -m "Download this file"
 
-    > slackcli -t <SLACK TOKEN> -g <GROUP NAME> -c
+Send from standard input
+------------------------
+
+    # slackcli -t slack_token -g group_name -c
     Hello World!
-    >
+    #
 
-# Install
+Install
+-------
 With npm do:
 
     npm install -g slack-cli
 
-# Usage
+Usage
+-----
 
-    > slackcli --help
+    # slackcli --help
     USAGE: node <SOMEWHERE>\npm\node_modules\slack-cli\bin\cmd.js [OPTION1] [OPTION2]... arg1 arg2...
     The following options are supported:
       -m, --message <ARG1>  Specify the text of the message to send
@@ -34,9 +44,9 @@ With npm do:
       -w, --waitText <ARG1>         Specify the text message to wait.  Default timeout is 30 seconds.
       -s, --timeout <ARG1>          Specify the seconds to timeout when using --waitText.
 
-# Advanced mode
+Advanced Mode
+-------------
+To reuse the [Slack token](https://api.slack.com/web), you can set the token as the environment variable SLACK_TOKEN like this.
 
-To reuse the Slack token, you can set the token as the environment variable SLACK_TOKEN like this.
-
-    SET SLACK_TOKEN=<SLACK TOKEN>
+    SET SLACK_TOKEN=xoxo-12345678-12345678-12345678-123abc
 
