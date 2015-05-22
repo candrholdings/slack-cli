@@ -34,40 +34,45 @@
         <h1>
 <a id="slack-cli" class="anchor" href="#slack-cli" aria-hidden="true"><span class="octicon octicon-link"></span></a>slack-cli</h1>
 
-<p>A simple CLI for Slack.</p>
+<p>A very simple command line interface (CLI) for <a href="https://slack.com">Slack</a>.</p>
 
-<h1>
-<a id="send-a-message" class="anchor" href="#send-a-message" aria-hidden="true"><span class="octicon octicon-link"></span></a>Send a message</h1>
+<h2>
+<a id="send-a-message" class="anchor" href="#send-a-message" aria-hidden="true"><span class="octicon octicon-link"></span></a>Send a message</h2>
 
-<pre><code>slackcli -t &lt;SLACK TOKEN&gt; -g &lt;GROUP NAME&gt; -m "Hello World!"
+<pre><code>slackcli -t slack_token -g group_name -m "Hello World!"
 </code></pre>
 
-<h1>
-<a id="send-a-file" class="anchor" href="#send-a-file" aria-hidden="true"><span class="octicon octicon-link"></span></a>Send a file</h1>
+<p>Or if the environment variable <a href="https://api.slack.com/web"><code>SLACK_TOKEN</code></a> is set, you can simply use,</p>
 
-<pre><code>slackcli -t &lt;SLACK TOKEN&gt; -g &lt;GROUP NAME&gt; -f &lt;FILE NAME&gt; -m "Download this file"
+<pre><code>slackcli -g group_name -m "Hello World!"
 </code></pre>
 
-<h1>
-<a id="send-from-standard-input" class="anchor" href="#send-from-standard-input" aria-hidden="true"><span class="octicon octicon-link"></span></a>Send from standard input</h1>
+<h2>
+<a id="send-a-file" class="anchor" href="#send-a-file" aria-hidden="true"><span class="octicon octicon-link"></span></a>Send a file</h2>
 
-<pre><code>&gt; slackcli -t &lt;SLACK TOKEN&gt; -g &lt;GROUP NAME&gt; -c
+<pre><code>slackcli -t slack_token -g group_name -f filename -m "Download this file"
+</code></pre>
+
+<h2>
+<a id="send-from-standard-input" class="anchor" href="#send-from-standard-input" aria-hidden="true"><span class="octicon octicon-link"></span></a>Send from standard input</h2>
+
+<pre><code># slackcli -t slack_token -g group_name -c
 Hello World!
-&gt;
+#
 </code></pre>
 
-<h1>
-<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h1>
+<h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h2>
 
 <p>With npm do:</p>
 
 <pre><code>npm install -g slack-cli
 </code></pre>
 
-<h1>
-<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h1>
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<pre><code>&gt; slackcli --help
+<pre><code># slackcli --help
 USAGE: node &lt;SOMEWHERE&gt;\npm\node_modules\slack-cli\bin\cmd.js [OPTION1] [OPTION2]... arg1 arg2...
 The following options are supported:
   -m, --message &lt;ARG1&gt;  Specify the text of the message to send
@@ -80,12 +85,12 @@ The following options are supported:
   -s, --timeout &lt;ARG1&gt;          Specify the seconds to timeout when using --waitText.
 </code></pre>
 
-<h1>
-<a id="advanced-mode" class="anchor" href="#advanced-mode" aria-hidden="true"><span class="octicon octicon-link"></span></a>Advanced mode</h1>
+<h2>
+<a id="advanced-mode" class="anchor" href="#advanced-mode" aria-hidden="true"><span class="octicon octicon-link"></span></a>Advanced Mode</h2>
 
-<p>To reuse the Slack token, you can set the token as the environment variable SLACK_TOKEN like this.</p>
+<p>To reuse the <a href="https://api.slack.com/web">Slack token</a>, you can set the token as the environment variable <code>SLACK_TOKEN</code> like this.</p>
 
-<pre><code>SET SLACK_TOKEN=&lt;SLACK TOKEN&gt;
+<pre><code>SET SLACK_TOKEN=xoxo-12345678-12345678-12345678-123abc
 </code></pre>
       </section>
     </div>
