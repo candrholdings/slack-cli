@@ -22,12 +22,7 @@
     "test": "jasmine-node test/"
   },
   "author": "C&R Holdings Limited",
-  "license": [
-    {
-      "type": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0"
-    }
-  ],
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/raymondkpwong/slack-cli.git"
