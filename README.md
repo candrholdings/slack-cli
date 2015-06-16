@@ -1,5 +1,7 @@
 slack-cli
 =========
+
+[![Join the chat at https://gitter.im/candrholdings/slack-cli](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/candrholdings/slack-cli?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 A very simple command line interface (CLI) for [Slack](https://slack.com).
 
 Send a message
