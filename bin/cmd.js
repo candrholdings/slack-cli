@@ -57,6 +57,10 @@ var cmd = function () {
             key: 's',
             description: 'Specify the seconds to timeout when using --waitForText.',
             args: 1
+        },
+        'read': {
+            key: 'r',
+            description: 'Read to stdout.'
         }
     });
 
@@ -83,7 +87,7 @@ var cmd = function () {
 
         return request.post(url, data, callback);
     }
-
+    
     async.auto({
         'checkArgs': function (callback) {
             logger.debug('checkArgs');
@@ -98,7 +102,7 @@ var cmd = function () {
                 return callback('group not found');
             }
 
-            if (!options.message && !options.file && !options.console && !options.waitForText) {
+            if (!options.message && !options.file && !options.console && !options.waitForText && !options.read) {
                 return callback('nothing to do');
             }
 
@@ -258,7 +262,7 @@ var cmd = function () {
             logger.debug('rtm');
 
             if (!options.waitForText) {
-                return;
+                return callback();
             }
 
             post(api('rtm.start'), {}, function (err, response, body) {
@@ -275,8 +279,12 @@ var cmd = function () {
 
                 setTimeout(function () {
                     ws.close();
-                    return callback('timeout');
+                    callback('timeout');
                 }, options.timeout || DEFAULT_TIMEOUT);
+                
+                ws.on('close', function () {
+                    callback('close');
+                });
 
                 ws.on('message', function (data, flags) {
                     if (flags.binary) {
@@ -291,6 +299,49 @@ var cmd = function () {
                     if (result.type === 'message' && result.text === options.waitForText) {
                         ws.close();
                         return callback(null, result);
+                    }
+                });
+            });
+        }],
+        'read': [ 'groupId', function (callback, pipe) {
+            if (!options.read) {
+                return callback();
+            }
+            
+            post(api('rtm.start'), {}, function (err, response, body) {
+                var result = JSON.parse(body);
+                
+                var wss = result.url;
+
+                logger.debug('url', wss);
+
+                if (!wss) {
+                    return callback('wss not found');
+                }
+
+                var ws = new WebSocket(wss);
+                
+                ws.on('open', function () {
+                    logger.debug('ws.on(open)');
+                });
+                
+                ws.on('close', function () {
+                    logger.debug('ws.on(close)');
+                    callback();
+                });
+
+                ws.on('message', function (data, flags) {
+                    if (flags.binary) {
+                        return;
+                    }
+
+                    var result = JSON.parse(data);
+                    
+                    logger.debug(result);
+                    logger.debug(result.channel, pipe.groupId);
+
+                    if (result.type === 'message' && result.channel === pipe.groupId) {
+                        console.log(result.text);
                     }
                 });
             });
