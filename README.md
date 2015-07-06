@@ -10,6 +10,10 @@ Send a message
 Or if the environment variable [`SLACK_TOKEN`](https://api.slack.com/web) is set, you can simply use,
 
     slackcli -g group_name -m "Hello World!"
+    
+Or use -h instead, if you want to post to a channel
+
+    slackcli -h channel_name -m "Hello World!"
 
 Send a file
 -----------
@@ -21,7 +25,6 @@ Send from standard input
 
     # slackcli -t slack_token -g group_name -c
     Hello World!
-    #
 
 Install
 -------
@@ -36,7 +39,8 @@ Usage
     USAGE: node <SOMEWHERE>\npm\node_modules\slack-cli\bin\cmd.js [OPTION1] [OPTION2]... arg1 arg2...
     The following options are supported:
       -m, --message <ARG1>  Specify the text of the message to send
-      -g, --group <ARG1>    Specify the group name (mandatory)
+      -g, --group <ARG1>    Specify the group name
+      -h, --channel <ARG1>  Specify the channel name
       -f, --file <ARG1>     Specify the name of the file to send
       -t, --token <ARG1>    Specify the Slack API token
       -v, --verbose         Set to verbose mode
