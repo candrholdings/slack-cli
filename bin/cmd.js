@@ -20,14 +20,18 @@ var cmd = function () {
 
     var options = stdio.getopt({
         'message': {
-            key: 'm', 
+            key: 'm',
             description: 'Specify the text of the message to send.',
             args: 1
         },
         'group': {
             key: 'g',
             description: 'Specify the group name.',
-            mandatory: true,
+            args: 1
+        },
+        'channel': {
+            key: 'h',
+            description: 'Specify the channel name.',
             args: 1
         },
         'file': {
@@ -66,7 +70,7 @@ var cmd = function () {
 
     var logger = new (winston.Logger) ({
         transports: [
-            new (winston.transports.Console) ({ 
+            new (winston.transports.Console) ({
                 colorize: true,
                 timestamp: options.verbose,
                 level: options.verbose ? 'debug' : 'info',
@@ -87,7 +91,7 @@ var cmd = function () {
 
         return request.post(url, data, callback);
     }
-    
+
     async.auto({
         'checkArgs': function (callback) {
             logger.debug('checkArgs');
@@ -98,8 +102,12 @@ var cmd = function () {
                 return callback('SLACK_TOKEN not found');
             }
 
-            if (!options.group) {
-                return callback('group not found');
+            if (!options.group && !options.channel) {
+                return callback('group and channel not found');
+            }
+
+            if (options.group && options.channel) {
+                return callback('must be either a group or a channel');
             }
 
             if (!options.message && !options.file && !options.console && !options.waitForText && !options.read) {
@@ -111,17 +119,25 @@ var cmd = function () {
         'groups': [ 'checkArgs', function (callback, pipe) {
             logger.debug('groups');
 
+            if (!options.group && options.channel) {
+                return callback();
+            }
+
             post(api('groups.list'), {}, function (err, response, body) {
                 if (err) {
-                    return callback(err);                    
+                    return callback(err);
                 }
-                
+
                 logger.debug(JSON.parse(body));
                 callback(null, JSON.parse(body).groups);
             });
         }],
         'groupId': [ 'groups', function (callback, pipe) {
             logger.debug('groupId');
+
+            if (!options.group && options.channel) {
+                return callback();
+            }
 
             var id,
                 group = options.group;
@@ -131,7 +147,7 @@ var cmd = function () {
                     id = v.id;
                 }
             });
-            
+
             if (!id) {
                 logger.error(group + ' not found');
                 return callback(group + ' not found');
@@ -141,16 +157,64 @@ var cmd = function () {
 
             callback(null, id);
         }],
-        'sendMessage': [ 'groupId', function (callback, pipe) {
+        'channels': [ 'checkArgs', function (callback, pipe) {
+            logger.debug('channels');
+
+            if (options.group && !options.channel) {
+                return callback();
+            }
+
+            post(api('channels.list'), {}, function (err, response, body) {
+                if (err) {
+                    return callback(err);
+                }
+
+                logger.debug(JSON.parse(body));
+                callback(null, JSON.parse(body).channels);
+            });
+        }],
+        'channelId': [ 'channels', function (callback, pipe) {
+            logger.debug('channelId');
+
+            if (options.group && !options.channel) {
+                return callback();
+            }
+
+            var id,
+                channel = options.channel;
+
+            pipe.channels.forEach(function (v, i) {
+                if (v.name === channel) {
+                    id = v.id;
+                }
+            });
+
+            if (!id) {
+                logger.error(channel + ' not found');
+                return callback(channel + ' not found');
+            }
+
+            logger.debug('channel ' + id);
+
+            callback(null, id);
+        }],
+        'sendMessage': [ 'groupId', 'channelId', function (callback, pipe) {
             logger.debug('sendMessage');
 
             if (!options.message || (options.message && options.file)) {
                 return callback();
             }
 
-            post(api('chat.postMessage'), { 
+            var id
+            if (options.group && !options.channel) {
+                id = pipe.groupId
+            } else if (!options.group && options.channel) {
+                id = pipe.channelId
+            }
+
+            post(api('chat.postMessage'), {
                 form: {
-                    channel: pipe.groupId,
+                    channel: id,
                     text: options.message
                 }
             }, function (err, response, body) {
@@ -158,28 +222,35 @@ var cmd = function () {
                 callback(err, err ? null : JSON.parse(body));
             });
         }],
-        'uploadFile': [ 'groupId', function (callback, pipe) {
+        'uploadFile': [ 'groupId', 'channelId', function (callback, pipe) {
             logger.debug('uploadFile');
 
             if (!options.file) {
                 return callback();
             }
 
+            var id
+            if (options.group && !options.channel) {
+                id = pipe.groupId
+            } else if (!options.group && options.channel) {
+                id = pipe.channelId
+            }
+
             var formData = {
-                channel: pipe.groupId,
+                channel: pipe.id,
                 file: fs.createReadStream(options.file),
                 filename: options.file
             };
-            
+
             post(api('files.upload'), {
                 formData: formData
             }, function (err, response, body) {
                 if (err) {
                     return callback(err);
                 }
-                
+
                 var result = JSON.parse(body);
-                result.channelId = pipe.groupId;
+                result.channelId = pipe.id;
                 logger.debug(result);
                 callback(null, result);
             });
@@ -191,9 +262,16 @@ var cmd = function () {
                 return callback();
             }
 
-            post(api('chat.postMessage'), { 
+            var id
+            if (options.group && !options.channel) {
+                id = pipe.groupId
+            } else if (!options.group && options.channel) {
+                id = pipe.channelId
+            }
+
+            post(api('chat.postMessage'), {
                 form: {
-                    channel: pipe.groupId,
+                    channel: pipe.id,
                     text: '<' + pipe.uploadFile.file.permalink + '|' + (options.message || options.file) + '> (<' + pipe.uploadFile.file.permalink_public + '|Public Permalink>)'
                 }
             }, function (err, response, body) {
@@ -205,7 +283,7 @@ var cmd = function () {
                 callback(null, JSON.parse(body));
             });
         }],
-        'sendConsoleMessage': [ 'groupId', function (callback, pipe) {
+        'sendConsoleMessage': [ 'groupId', 'channelId', function (callback, pipe) {
             logger.debug('sendConsoleMessage');
 
             if (!options.console) {
@@ -214,6 +292,13 @@ var cmd = function () {
 
             var message = '';
             var messages = [];
+
+            var id
+            if (options.group && !options.channel) {
+                id = pipe.groupId
+            } else if (!options.group && options.channel) {
+                id = pipe.channelId
+            }
 
             process.stdin.setEncoding('utf8');
 
@@ -228,9 +313,9 @@ var cmd = function () {
                 message = m[m.length - 1];
 
                 messages.forEach(function (v, i) {
-                    post(api('chat.postMessage'), { 
+                    post(api('chat.postMessage'), {
                         form: {
-                            channel: pipe.groupId,
+                            channel: id,
                             text: v
                         }
                     }, function (err, response, body) {
@@ -243,9 +328,9 @@ var cmd = function () {
             });
 
             process.stdin.on('end', function() {
-                post(api('chat.postMessage'), { 
+                post(api('chat.postMessage'), {
                     form: {
-                        channel: pipe.groupId,
+                        channel: pipe.id,
                         text: message
                     }
                 }, function (err, response, body) {
@@ -258,7 +343,7 @@ var cmd = function () {
                 callback(err);
             });
         }],
-        'waitForText': [ 'groupId', function (callback, pipe) {
+        'waitForText': [ 'groupId', 'channelId', function (callback, pipe) {
             logger.debug('rtm');
 
             if (!options.waitForText) {
@@ -281,7 +366,7 @@ var cmd = function () {
                     ws.close();
                     callback('timeout');
                 }, options.timeout || DEFAULT_TIMEOUT);
-                
+
                 ws.on('close', function () {
                     callback('close');
                 });
@@ -303,14 +388,14 @@ var cmd = function () {
                 });
             });
         }],
-        'read': [ 'groupId', function (callback, pipe) {
+        'read': [ 'groupId', 'channelId', function (callback, pipe) {
             if (!options.read) {
                 return callback();
             }
-            
+
             post(api('rtm.start'), {}, function (err, response, body) {
                 var result = JSON.parse(body);
-                
+
                 var wss = result.url;
 
                 logger.debug('url', wss);
@@ -320,11 +405,11 @@ var cmd = function () {
                 }
 
                 var ws = new WebSocket(wss);
-                
+
                 ws.on('open', function () {
                     logger.debug('ws.on(open)');
                 });
-                
+
                 ws.on('close', function () {
                     logger.debug('ws.on(close)');
                     callback();
@@ -336,12 +421,25 @@ var cmd = function () {
                     }
 
                     var result = JSON.parse(data);
-                    
-                    logger.debug(result);
-                    logger.debug(result.channel, pipe.groupId);
 
-                    if (result.type === 'message' && result.channel === pipe.groupId) {
-                        console.log(result.text);
+                    logger.debug(result);
+                    if (options.group && !options.channel) {
+                        logger.debug(result.channel, pipe.groupId);
+                    } else if (!options.group && options.channel) {
+                        logger.debug(result.channel, pipe.channelId);
+                    }
+
+
+                    if (result.type === 'message') {
+                        if (options.group && !options.channel) {
+                            if (result.channel === pipe.groupId) {
+                                console.log(result.text);
+                            }
+                        } else if (!options.group && options.channel) {
+                            if (result.channel === pipe.channelId) {
+                                console.log(result.text);
+                            }
+                        }
                     }
                 });
             });
