@@ -205,11 +205,13 @@ var cmd = function () {
                 return callback();
             }
 
-            var id
+            var id;
+
             if (options.group && !options.channel) {
-                id = pipe.groupId
-            } else if (!options.group && options.channel) {
-                id = pipe.channelId
+                id = pipe.groupId;
+            }
+            else if (!options.group && options.channel) {
+                id = pipe.channelId;
             }
 
             post(api('chat.postMessage'), {
@@ -229,11 +231,13 @@ var cmd = function () {
                 return callback();
             }
 
-            var id
+            var id;
+
             if (options.group && !options.channel) {
-                id = pipe.groupId
-            } else if (!options.group && options.channel) {
-                id = pipe.channelId
+                id = pipe.groupId;
+            }
+            else if (!options.group && options.channel) {
+                id = pipe.channelId;
             }
 
             var formData = {
@@ -262,11 +266,13 @@ var cmd = function () {
                 return callback();
             }
 
-            var id
+            var id;
+            
             if (options.group && !options.channel) {
-                id = pipe.groupId
-            } else if (!options.group && options.channel) {
-                id = pipe.channelId
+                id = pipe.groupId;
+            }
+            else if (!options.group && options.channel) {
+                id = pipe.channelId;
             }
 
             post(api('chat.postMessage'), {
@@ -293,11 +299,13 @@ var cmd = function () {
             var message = '';
             var messages = [];
 
-            var id
+            var id;
+
             if (options.group && !options.channel) {
-                id = pipe.groupId
-            } else if (!options.group && options.channel) {
-                id = pipe.channelId
+                id = pipe.groupId;
+            }
+            else if (!options.group && options.channel) {
+                id = pipe.channelId;
             }
 
             process.stdin.setEncoding('utf8');
