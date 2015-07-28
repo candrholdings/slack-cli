@@ -19,6 +19,21 @@ var cmd = function () {
     var DEFAULT_TIMEOUT = 30000;
 
     var options = stdio.getopt({
+        'username': {
+            key: 'u',
+            description: 'Specify the name of the bot.',
+            args: 1
+        },
+        'icon_url': {
+            key: 'i',
+            description: 'Specify the URL to an image to use as the icon for this message.',
+            args: 1
+        },
+        'icon_emoji': {
+            key: 'e',
+            description: 'Specify the emoji to use as the icon for this message.  This cannot be used together with icon_url.',
+            args: 1
+        },
         'message': {
             key: 'm',
             description: 'Specify the text of the message to send.',
@@ -92,6 +107,16 @@ var cmd = function () {
         return request.post(url, data, callback);
     }
 
+    function addUserInfo(formData) {
+        ['username', 'icon_url', 'icon_emoji'].forEach(function (key) {
+            if (options[key]) {
+                formData[key] = options[key];
+            }
+        });
+
+        return formData;
+    }
+
     async.auto({
         'checkArgs': function (callback) {
             logger.debug('checkArgs');
@@ -112,6 +137,14 @@ var cmd = function () {
 
             if (!options.message && !options.file && !options.console && !options.waitForText && !options.read) {
                 return callback('nothing to do');
+            }
+
+            if (options.icon_url && options.icon_emoji) {
+            	return callback('icon_url and icon_emoji cannot be specified at the same time');
+            }
+
+            if (options.icon_emoji && !/^:[a-z_0-9\+]+:$/.test(options.icon_emoji)) {
+            	return callback('icon_emoji is invalid, which is defined at http://www.emoji-cheat-sheet.com/');
             }
 
             callback();
@@ -214,11 +247,13 @@ var cmd = function () {
                 id = pipe.channelId;
             }
 
+            var formData = {
+                channel: id,
+                text: options.message
+            }
+
             post(api('chat.postMessage'), {
-                form: {
-                    channel: id,
-                    text: options.message
-                }
+                form: addUserInfo(formData)
             }, function (err, response, body) {
                 logger.debug(JSON.parse(body));
                 callback(err, err ? null : JSON.parse(body));
