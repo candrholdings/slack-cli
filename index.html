@@ -1,40 +1,38 @@
 <!DOCTYPE html>
 <html>
-
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Slack-cli : A command line interface for Slack implemented using node.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 
-    <title>Slack-cli</title>
+    <title>Slack-cli by candrholdings</title>
   </head>
 
   <body>
+    <header>
+      <div class="inner">
+        <h1>Slack-cli</h1>
+        <h2>A command line interface for Slack implemented using node.</h2>
+        <a href="https://github.com/candrholdings/slack-cli" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/candrholdings/slack-cli">View on GitHub</a>
-
-          <h1 id="project_title">Slack-cli</h1>
-          <h2 id="project_tagline">A command line interface for Slack implemented using node.</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/candrholdings/slack-cli/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/candrholdings/slack-cli/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
 <a id="slack-cli" class="anchor" href="#slack-cli" aria-hidden="true"><span class="octicon octicon-link"></span></a>slack-cli</h1>
 
-<p>A very simple command line interface (CLI) for <a href="https://slack.com">Slack</a>.</p>
+<p><a href="https://gitter.im/candrholdings/slack-cli?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/candrholdings/slack-cli"></a>
+A very simple command line interface (CLI) for <a href="https://slack.com">Slack</a>.</p>
 
 <h2>
 <a id="send-a-message" class="anchor" href="#send-a-message" aria-hidden="true"><span class="octicon octicon-link"></span></a>Send a message</h2>
@@ -45,6 +43,11 @@
 <p>Or if the environment variable <a href="https://api.slack.com/web"><code>SLACK_TOKEN</code></a> is set, you can simply use,</p>
 
 <pre><code>slackcli -g group_name -m "Hello World!"
+</code></pre>
+
+<p>Or use -h instead, if you want to post to a channel</p>
+
+<pre><code>slackcli -h channel_name -m "Hello World!"
 </code></pre>
 
 <h2>
@@ -58,7 +61,12 @@
 
 <pre><code># slackcli -t slack_token -g group_name -c
 Hello World!
-#
+</code></pre>
+
+<h2>
+<a id="send-with-customized-icon" class="anchor" href="#send-with-customized-icon" aria-hidden="true"><span class="octicon octicon-link"></span></a>Send with customized icon</h2>
+
+<pre><code># slackcli -t slack_token -g group_name -u goat -e :goat: -m baaaaaaaaa
 </code></pre>
 
 <h2>
@@ -75,14 +83,20 @@ Hello World!
 <pre><code># slackcli --help
 USAGE: node &lt;SOMEWHERE&gt;\npm\node_modules\slack-cli\bin\cmd.js [OPTION1] [OPTION2]... arg1 arg2...
 The following options are supported:
-  -m, --message &lt;ARG1&gt;  Specify the text of the message to send
-  -g, --group &lt;ARG1&gt;    Specify the group name (mandatory)
-  -f, --file &lt;ARG1&gt;     Specify the name of the file to send
-  -t, --token &lt;ARG1&gt;    Specify the Slack API token
-  -v, --verbose         Set to verbose mode
-  -c, --console         Use console to input message
-  -w, --waitText &lt;ARG1&gt;         Specify the text message to wait.  Default timeout is 30 seconds.
-  -s, --timeout &lt;ARG1&gt;          Specify the seconds to timeout when using --waitText.
+
+  -u, --username &lt;ARG1&gt;         Specify the name of the bot.
+  -i, --icon_url &lt;ARG1&gt;         Specify the URL to an image to use as the icon for this message.
+  -e, --icon_emoji &lt;ARG1&gt;       Specify the emoji to use as the icon for this message.  This cannot be used together with icon_url.
+  -m, --message &lt;ARG1&gt;          Specify the text of the message to send.
+  -g, --group &lt;ARG1&gt;            Specify the group name.
+  -h, --channel &lt;ARG1&gt;          Specify the channel name.
+  -f, --file &lt;ARG1&gt;             Specify the name of the file to send.
+  -t, --token &lt;ARG1&gt;            Specify the Slack API token.
+  -v, --verbose                 Set to verbose mode.
+  -c, --console                 Use console to input message.
+  -w, --waitForText &lt;ARG1&gt;      Specify the text message to wait.  Default timeout is 30 seconds.
+  -s, --timeout &lt;ARG1&gt;          Specify the seconds to timeout when using --waitForText.
+  -r, --read                    Read to stdout.
 </code></pre>
 
 <h2>
@@ -92,18 +106,25 @@ The following options are supported:
 
 <pre><code>SET SLACK_TOKEN=xoxo-12345678-12345678-12345678-123abc
 </code></pre>
-      </section>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/candrholdings/slack-cli/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/candrholdings/slack-cli/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/candrholdings/slack-cli"></a> is maintained by <a href="https://github.com/candrholdings">candrholdings</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
     </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Slack-cli maintained by <a href="https://github.com/candrholdings">candrholdings</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
-    
-
+  
   </body>
 </html>
