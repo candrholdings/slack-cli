@@ -19,6 +19,21 @@ var cmd = function () {
     var DEFAULT_TIMEOUT = 30000;
 
     var options = stdio.getopt({
+        'username': {
+            key: 'u',
+            description: 'Specify the username of the bot.',
+            args: 1
+        },
+        'icon_url': {
+            key: 'i',
+            description: 'Specify the icon url of the bot.',
+            args: 1
+        },
+        'icon_emoji': {
+            key: 'e',
+            description: 'Specify the icon emoji of the bot.',
+            args: 1
+        },
         'message': {
             key: 'm',
             description: 'Specify the text of the message to send.',
@@ -90,6 +105,15 @@ var cmd = function () {
         logger.debug('request.post url', url, 'data', data);
 
         return request.post(url, data, callback);
+    }
+
+    function addUserInfo(formData) {
+        ['username', 'user_url', 'icon_emoji'].forEach(function(key) {
+            if (options[key]) {
+                formData[key] = options[key];
+            }
+        });
+        return formData;
     }
 
     async.auto({
@@ -214,11 +238,13 @@ var cmd = function () {
                 id = pipe.channelId;
             }
 
+            var formData = {
+                channel: id,
+                text: options.message
+            }
+
             post(api('chat.postMessage'), {
-                form: {
-                    channel: id,
-                    text: options.message
-                }
+                form: addUserInfo(formData)
             }, function (err, response, body) {
                 logger.debug(JSON.parse(body));
                 callback(err, err ? null : JSON.parse(body));
