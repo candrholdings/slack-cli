@@ -1,6 +1,6 @@
 {
   "name": "slack-cli",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "A simple CLI for Slack",
   "bin": {
     "slackcli": "bin/cmd.js"

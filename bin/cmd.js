@@ -21,17 +21,17 @@ var cmd = function () {
     var options = stdio.getopt({
         'username': {
             key: 'u',
-            description: 'Specify the username of the bot.',
+            description: 'Specify the name of the bot.',
             args: 1
         },
         'icon_url': {
             key: 'i',
-            description: 'Specify the icon url of the bot.',
+            description: 'Specify the URL to an image to use as the icon for this message.',
             args: 1
         },
         'icon_emoji': {
             key: 'e',
-            description: 'Specify the icon emoji of the bot.',
+            description: 'Specify the emoji to use as the icon for this message.  This cannot be used together with icon_url.',
             args: 1
         },
         'message': {
@@ -108,11 +108,12 @@ var cmd = function () {
     }
 
     function addUserInfo(formData) {
-        ['username', 'user_url', 'icon_emoji'].forEach(function(key) {
+        ['username', 'icon_url', 'icon_emoji'].forEach(function (key) {
             if (options[key]) {
                 formData[key] = options[key];
             }
         });
+
         return formData;
     }
 
@@ -136,6 +137,14 @@ var cmd = function () {
 
             if (!options.message && !options.file && !options.console && !options.waitForText && !options.read) {
                 return callback('nothing to do');
+            }
+
+            if (options.icon_url && options.icon_emoji) {
+            	return callback('icon_url and icon_emoji cannot be specified at the same time');
+            }
+
+            if (options.icon_emoji && !/^:[a-z_0-9\+]+:$/.test(options.icon_emoji)) {
+            	return callback('icon_emoji is invalid, which is defined at http://www.emoji-cheat-sheet.com/');
             }
 
             callback();
