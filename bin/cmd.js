@@ -276,7 +276,7 @@ var cmd = function () {
             }
 
             var formData = {
-                channel: pipe.id,
+                channel: id,
                 file: fs.createReadStream(options.file),
                 filename: options.file
             };
@@ -309,12 +309,14 @@ var cmd = function () {
             else if (!options.group && options.channel) {
                 id = pipe.channelId;
             }
-
+            
+            var form = {
+                channel: id,
+                text: '<' + pipe.uploadFile.file.permalink + '|' + (options.message || options.file) + '> (<' + pipe.uploadFile.file.permalink_public + '|Public Permalink>)'
+            };
+            
             post(api('chat.postMessage'), {
-                form: {
-                    channel: pipe.id,
-                    text: '<' + pipe.uploadFile.file.permalink + '|' + (options.message || options.file) + '> (<' + pipe.uploadFile.file.permalink_public + '|Public Permalink>)'
-                }
+                form: form
             }, function (err, response, body) {
                 if (err) {
                     return callback(err);
