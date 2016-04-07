@@ -77,6 +77,10 @@ var cmd = function () {
             description: 'Specify the seconds to timeout when using --waitForText.',
             args: 1
         },
+        'linkNames': {
+            key: 'l',
+            description: 'Link names in messages.'
+        },
         'read': {
             key: 'r',
             description: 'Read to stdout.'
@@ -250,7 +254,7 @@ var cmd = function () {
             var formData = {
                 channel: id,
                 text: options.message,
-                link_names: 1
+                link_names: options.linkNames ? 1 : null
             }
 
             post(api('chat.postMessage'), {
@@ -363,7 +367,7 @@ var cmd = function () {
                         form: {
                             channel: id,
                             text: v,
-                            link_names: 1
+                            link_names: options.linkNames ? 1 : null
                         }
                     }, function (err, response, body) {
                         logger.debug(JSON.parse(body));
@@ -379,7 +383,7 @@ var cmd = function () {
                     form: {
                         channel: pipe.id,
                         text: message,
-                        link_names: 1
+                        link_names: options.linkNames ? 1 : null
                     }
                 }, function (err, response, body) {
                     logger.debug(JSON.parse(body));
