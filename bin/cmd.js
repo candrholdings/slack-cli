@@ -249,7 +249,8 @@ var cmd = function () {
 
             var formData = {
                 channel: id,
-                text: options.message
+                text: options.message,
+                link_names: 1
             }
 
             post(api('chat.postMessage'), {
@@ -361,7 +362,8 @@ var cmd = function () {
                     post(api('chat.postMessage'), {
                         form: {
                             channel: id,
-                            text: v
+                            text: v,
+                            link_names: 1
                         }
                     }, function (err, response, body) {
                         logger.debug(JSON.parse(body));
@@ -376,7 +378,8 @@ var cmd = function () {
                 post(api('chat.postMessage'), {
                     form: {
                         channel: pipe.id,
-                        text: message
+                        text: message,
+                        link_names: 1
                     }
                 }, function (err, response, body) {
                     logger.debug(JSON.parse(body));
