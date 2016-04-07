@@ -58,6 +58,7 @@ Usage
       -c, --console                 Use console to input message.
       -w, --waitForText <ARG1>      Specify the text message to wait.  Default timeout is 30 seconds.
       -s, --timeout <ARG1>          Specify the seconds to timeout when using --waitForText.
+      -l, --linkNames               Link names in messages.
       -r, --read                    Read to stdout.
 
 Advanced Mode
