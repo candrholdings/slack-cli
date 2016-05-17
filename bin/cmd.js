@@ -84,6 +84,14 @@ var cmd = function () {
         'read': {
             key: 'r',
             description: 'Read to stdout.'
+        },
+        'asUser': {
+            key: 'a',
+            description: 'Post message as a user for which API Token belongs to.'
+        },
+        'pin': {
+            key:'p',
+            description : 'Pin message after sending.'
         }
     });
 
@@ -254,7 +262,8 @@ var cmd = function () {
             var formData = {
                 channel: id,
                 text: options.message,
-                link_names: options.linkNames ? 1 : null
+                link_names: options.linkNames ? 1 : null,
+                as_user: options.asUser ? 1 : null,
             }
 
             post(api('chat.postMessage'), {
@@ -263,6 +272,25 @@ var cmd = function () {
                 logger.debug(JSON.parse(body));
                 callback(err, err ? null : JSON.parse(body));
             });
+        }],
+        'pin': ['sendMessage', function(callback, pipe) {
+            logger.debug('pin message');
+
+            var channelId = pipe.sendMessage.channel;
+            var timestamp = pipe.sendMessage.ts
+
+            var formData = {
+                channel: channelId,
+                timestamp: timestamp,
+            }
+
+            post(api('pins.add'), {
+                form: formData
+            }, function (err, response, body) {
+                logger.debug(JSON.parse(body));
+                callback(err, err ? null : JSON.parse(body));
+            });
+
         }],
         'uploadFile': [ 'groupId', 'channelId', function (callback, pipe) {
             logger.debug('uploadFile');
@@ -317,7 +345,8 @@ var cmd = function () {
             
             var form = {
                 channel: id,
-                text: '<' + pipe.uploadFile.file.permalink + '|' + (options.message || options.file) + '> (<' + pipe.uploadFile.file.permalink_public + '|Public Permalink>)'
+                text: '<' + pipe.uploadFile.file.permalink + '|' + (options.message || options.file) + '> (<' + pipe.uploadFile.file.permalink_public + '|Public Permalink>)',
+                as_user: options.asUser ? 1 : null
             };
             
             post(api('chat.postMessage'), {
@@ -367,7 +396,9 @@ var cmd = function () {
                         form: {
                             channel: id,
                             text: v,
-                            link_names: options.linkNames ? 1 : null
+                            link_names: options.linkNames ? 1 : null,
+                            as_user: options.asUser ? 1 : null, 
+
                         }
                     }, function (err, response, body) {
                         logger.debug(JSON.parse(body));
