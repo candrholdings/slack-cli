@@ -90,7 +90,7 @@ var cmd = function () {
             description: 'Post message as a user for which API Token belongs to.'
         },
         'pin': {
-            key:'p',
+            key: 'p',
             description : 'Pin message after sending.'
         }
     });
@@ -273,16 +273,28 @@ var cmd = function () {
                 callback(err, err ? null : JSON.parse(body));
             });
         }],
-        'pin': ['sendMessage', function(callback, pipe) {
+        'pin': ['sendMessage', function (callback, pipe) {
             logger.debug('pin message');
 
+	    if (options.file) {
+		return callback('pinning a file is not supported');
+	    }
+
+	    if (!options.message) {
+		return callback();
+	    }
+
+	    if (!options.pin) {
+		return callback();
+	    }
+
             var channelId = pipe.sendMessage.channel;
-            var timestamp = pipe.sendMessage.ts
+            var timestamp = pipe.sendMessage.ts;
 
             var formData = {
                 channel: channelId,
                 timestamp: timestamp,
-            }
+            };
 
             post(api('pins.add'), {
                 form: formData
