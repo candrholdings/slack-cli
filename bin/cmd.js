@@ -91,7 +91,7 @@ var cmd = function () {
         },
         'pin': {
             key: 'p',
-            description : 'Pin message after sending.'
+            description: 'Pin message after sending.'
         }
     });
 

@@ -60,6 +60,8 @@ Usage
       -s, --timeout <ARG1>          Specify the seconds to timeout when using --waitForText.
       -l, --linkNames               Link names in messages.
       -r, --read                    Read to stdout.
+      -a, --asUser                  Post message as a user for which API Token belongs to.
+      -p, --pin                     Pin message after sending.
 
 Advanced Mode
 -------------
