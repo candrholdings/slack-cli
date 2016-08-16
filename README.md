@@ -9,7 +9,7 @@ Send a message
 
     slackcli -t slack_token -g group_name -m "Hello World!"
     
-Or if the environment variable [`SLACK_TOKEN`](https://api.slack.com/web) is set, you can simply use,
+Or if the environment variable [`SLACK_TOKEN`](https://api.slack.com/docs/oauth-test-tokens) is set, you can simply use,
 
     slackcli -g group_name -m "Hello World!"
     
@@ -65,7 +65,7 @@ Usage
 
 Advanced Mode
 -------------
-To reuse the [Slack token](https://api.slack.com/web), you can set the token as the environment variable `SLACK_TOKEN` like this.
+To reuse the [Slack token](https://api.slack.com/docs/oauth-test-tokens), you can set the token as the environment variable `SLACK_TOKEN` like this.
 
     SET SLACK_TOKEN=xoxo-12345678-12345678-12345678-123abc
 
