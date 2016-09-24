@@ -49,6 +49,11 @@ var cmd = function () {
             description: 'Specify the channel name.',
             args: 1
         },
+         'direct_message': {
+            key: 'd',
+            description: 'Specify the username or email of the user to send the direct message',
+            args: 1
+        },
         'file': {
             key: 'f',
             description: 'Specify the name of the file to send.',
@@ -139,12 +144,14 @@ var cmd = function () {
                 return callback('SLACK_TOKEN not found');
             }
 
-            if (!options.group && !options.channel) {
-                return callback('group and channel not found');
+            var single_destination = (options.group && 1 || 0) + (options.channel && 1 || 0) + (options.direct_message && 1 || 0);
+
+            if (single_destination === 0) {
+                return callback('group, channel and direct_message not found');
             }
 
-            if (options.group && options.channel) {
-                return callback('must be either a group or a channel');
+            if (single_destination > 1) {
+                return callback('must be either a group, a channel or a direct_message');
             }
 
             if (!options.message && !options.file && !options.console && !options.waitForText && !options.read) {
@@ -180,7 +187,7 @@ var cmd = function () {
         'groupId': [ 'groups', function (callback, pipe) {
             logger.debug('groupId');
 
-            if (!options.group && options.channel) {
+            if (!options.group) {
                 return callback();
             }
 
@@ -221,7 +228,7 @@ var cmd = function () {
         'channelId': [ 'channels', function (callback, pipe) {
             logger.debug('channelId');
 
-            if (options.group && !options.channel) {
+            if (!options.channel) {
                 return callback();
             }
 
@@ -243,7 +250,48 @@ var cmd = function () {
 
             callback(null, id);
         }],
-        'sendMessage': [ 'groupId', 'channelId', function (callback, pipe) {
+         'users': [ 'checkArgs', function (callback, pipe) {
+            logger.debug('users');
+
+            if (!options.direct_message) {
+                return callback();
+            }
+
+            post(api('users.list'), {}, function (err, response, body) {
+                if (err) {
+                    return callback(err);
+                }
+
+                logger.debug(JSON.parse(body));
+                callback(null, JSON.parse(body).members);
+            });
+        }],
+        'userId': [ 'users', function (callback, pipe) {
+            logger.debug('userId');
+
+            if (!options.direct_message) {
+                return callback();
+            }
+
+            var id,
+                user = options.direct_message;
+
+            pipe.users.forEach(function (v, i) {
+                if ("@" + v.name === user || v.profile.email === user) {
+                    id = v.id;
+                }
+            });
+
+            if (!id) {
+                logger.error(user + ' not found');
+                return callback(user + ' not found');
+            }
+
+            logger.debug('user ' + id);
+
+            callback(null, id);
+        }],
+        'sendMessage': [ 'groupId', 'channelId', 'userId', function (callback, pipe) {
             logger.debug('sendMessage');
 
             if (!options.message || (options.message && options.file)) {
@@ -252,11 +300,14 @@ var cmd = function () {
 
             var id;
 
-            if (options.group && !options.channel) {
+            if (options.group) {
                 id = pipe.groupId;
             }
-            else if (!options.group && options.channel) {
+            else if (options.channel) {
                 id = pipe.channelId;
+            }
+            else if (options.direct_message) {
+                id = pipe.userId;
             }
 
             var formData = {
