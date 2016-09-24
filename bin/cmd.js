@@ -312,7 +312,7 @@ var cmd = function () {
 
             var formData = {
                 channel: id,
-                text: options.message,
+                text: options.message.split('\\n').join('\n'), // allow sending multiline messages
                 link_names: options.linkNames ? 1 : null,
                 as_user: options.asUser ? 1 : null,
             }
