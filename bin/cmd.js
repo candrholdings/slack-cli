@@ -327,16 +327,16 @@ var cmd = function () {
         'pin': ['sendMessage', function (callback, pipe) {
             logger.debug('pin message');
 
-	    if (options.file) {
-		return callback('pinning a file is not supported');
-	    }
-
 	    if (!options.message) {
 		return callback();
 	    }
 
 	    if (!options.pin) {
 		return callback();
+	    }
+
+            if (options.file) {
+		return callback('pinning a file is not supported');
 	    }
 
             var channelId = pipe.sendMessage.channel;
