@@ -355,9 +355,9 @@ var cmd = function () {
             });
 
         }],
-        'uploadFile': [ 'groupId', 'channelId', function (callback, pipe) {
+        'uploadFile': [ 'groupId', 'channelId', 'userId', function (callback, pipe) {
             logger.debug('uploadFile');
-
+            
             if (!options.file) {
                 return callback();
             }
@@ -369,6 +369,9 @@ var cmd = function () {
             }
             else if (!options.group && options.channel) {
                 id = pipe.channelId;
+            }
+            else if(options.direct_message){
+                id = pipe.userId;
             }
 
             var formData = {
@@ -404,6 +407,9 @@ var cmd = function () {
             }
             else if (!options.group && options.channel) {
                 id = pipe.channelId;
+            }
+            else if(options.direct_message){
+                id = pipe.userId;
             }
             
             var form = {
