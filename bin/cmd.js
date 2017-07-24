@@ -168,7 +168,7 @@ var cmd = function () {
 
             callback();
         },
-        'groups': [ 'checkArgs', function (callback, pipe) {
+        'groups': [ 'checkArgs', function (pipe, callback) {
             logger.debug('groups');
 
             if (!options.group && options.channel) {
@@ -184,7 +184,7 @@ var cmd = function () {
                 callback(null, JSON.parse(body).groups);
             });
         }],
-        'groupId': [ 'groups', function (callback, pipe) {
+        'groupId': [ 'groups', function (pipe, callback) {
             logger.debug('groupId');
 
             if (!options.group) {
@@ -209,7 +209,7 @@ var cmd = function () {
 
             callback(null, id);
         }],
-        'channels': [ 'checkArgs', function (callback, pipe) {
+        'channels': [ 'checkArgs', function (pipe, callback) {
             logger.debug('channels');
 
             if (options.group && !options.channel) {
@@ -225,7 +225,7 @@ var cmd = function () {
                 callback(null, JSON.parse(body).channels);
             });
         }],
-        'channelId': [ 'channels', function (callback, pipe) {
+        'channelId': [ 'channels', function (pipe, callback) {
             logger.debug('channelId');
 
             if (!options.channel) {
@@ -250,7 +250,7 @@ var cmd = function () {
 
             callback(null, id);
         }],
-         'users': [ 'checkArgs', function (callback, pipe) {
+         'users': [ 'checkArgs', function (pipe, callback) {
             logger.debug('users');
 
             if (!options.direct_message) {
@@ -266,7 +266,7 @@ var cmd = function () {
                 callback(null, JSON.parse(body).members);
             });
         }],
-        'userId': [ 'users', function (callback, pipe) {
+        'userId': [ 'users', function (pipe, callback) {
             logger.debug('userId');
 
             if (!options.direct_message) {
@@ -291,7 +291,7 @@ var cmd = function () {
 
             callback(null, id);
         }],
-        'sendMessage': [ 'groupId', 'channelId', 'userId', function (callback, pipe) {
+        'sendMessage': [ 'groupId', 'channelId', 'userId', function (pipe, callback) {
             logger.debug('sendMessage');
 
             if (!options.message || (options.message && options.file)) {
@@ -324,20 +324,20 @@ var cmd = function () {
                 callback(err, err ? null : JSON.parse(body));
             });
         }],
-        'pin': ['sendMessage', function (callback, pipe) {
+        'pin': ['sendMessage', function (pipe, callback) {
             logger.debug('pin message');
 
-	    if (!options.message) {
-		return callback();
-	    }
+	          if (!options.message) {
+		            return callback();
+	          }
 
-	    if (!options.pin) {
-		return callback();
-	    }
+	          if (!options.pin) {
+		            return callback();
+	          }
 
             if (options.file) {
-		return callback('pinning a file is not supported');
-	    }
+		            return callback('pinning a file is not supported');
+	          }
 
             var channelId = pipe.sendMessage.channel;
             var timestamp = pipe.sendMessage.ts;
@@ -355,7 +355,7 @@ var cmd = function () {
             });
 
         }],
-        'uploadFile': [ 'groupId', 'channelId', function (callback, pipe) {
+        'uploadFile': [ 'groupId', 'channelId', function (pipe, callback) {
             logger.debug('uploadFile');
 
             if (!options.file) {
@@ -390,7 +390,7 @@ var cmd = function () {
                 callback(null, result);
             });
         }],
-        'sendFileMessage': [ 'uploadFile', function (callback, pipe) {
+        'sendFileMessage': [ 'uploadFile', function (pipe, callback) {
             logger.debug('sendFileMessage');
 
             if (!pipe.uploadFile) {
@@ -423,7 +423,7 @@ var cmd = function () {
                 callback(null, JSON.parse(body));
             });
         }],
-        'sendConsoleMessage': [ 'groupId', 'channelId', function (callback, pipe) {
+        'sendConsoleMessage': [ 'groupId', 'channelId', function (pipe, callback) {
             logger.debug('sendConsoleMessage');
 
             if (!options.console) {
@@ -489,7 +489,7 @@ var cmd = function () {
                 callback(err);
             });
         }],
-        'waitForText': [ 'groupId', 'channelId', function (callback, pipe) {
+        'waitForText': [ 'groupId', 'channelId', function (pipe, callback) {
             logger.debug('rtm');
 
             if (!options.waitForText) {
@@ -534,7 +534,7 @@ var cmd = function () {
                 });
             });
         }],
-        'read': [ 'groupId', 'channelId', function (callback, pipe) {
+        'read': [ 'groupId', 'channelId', function (pipe, callback) {
             if (!options.read) {
                 return callback();
             }
