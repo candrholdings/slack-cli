@@ -406,14 +406,14 @@ var cmd = function () {
                 id = pipe.channelId;
             }
             
-            var form = {
+            var formData = {
                 channel: id,
                 text: '<' + pipe.uploadFile.file.permalink + '|' + (options.message || options.file) + '> (<' + pipe.uploadFile.file.permalink_public + '|Public Permalink>)',
                 as_user: options.asUser ? 1 : null
             };
             
             post(api('chat.postMessage'), {
-                form: form
+                form: addUserInfo(formData)
             }, function (err, response, body) {
                 if (err) {
                     return callback(err);
