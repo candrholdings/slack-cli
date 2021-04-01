@@ -175,7 +175,7 @@ var cmd = function () {
                 return callback();
             }
 
-            post(api('groups.list'), {}, function (err, response, body) {
+            post(api('conversations.list'), {}, function (err, response, body) {
                 if (err) {
                     return callback(err);
                 }
@@ -216,7 +216,7 @@ var cmd = function () {
                 return callback();
             }
 
-            post(api('channels.list'), {}, function (err, response, body) {
+            post(api('conversations.list'), {}, function (err, response, body) {
                 if (err) {
                     return callback(err);
                 }
